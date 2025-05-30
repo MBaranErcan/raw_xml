@@ -35,7 +35,8 @@
 //	std::cin.get();
 //}
 
-xml::string xml_input = "<book><content page_number=\"12\" text=\"hello\"><text>hello2</text></content><author>oscar wilde</author></book><mehmet>jedi</mehmet>";
+std::string xml_input = "<book><content page_number=\"12\" text=\"hello\"><maintext>hello2</maintext></content><author>oscar wilde</author></book><mehmet>jedi</mehmet>";
+
 
 int main() {
 	
@@ -43,10 +44,12 @@ int main() {
 
 	parser.parse(xml_input);
 
-	for (size_t i = 0; i < parser.xml_table.buffer_size; i++)
-		if (!parser.xml_table.buffer[i].first.empty())
-			std::cout << parser.xml_table.buffer[i].first << " " << parser.xml_table.buffer[i].second << std::endl;
+	for (auto& pair : parser.xml_table)
+		std::cout << pair.first << " " << pair.second << std::endl;
+
+	//for (size_t i = 0; i < parser.xml_table.buffer_size; i++)
+	//	if (!parser.xml_table.buffer[i].first.empty())
+	//		std::cout << parser.xml_table.buffer[i].first << " " << parser.xml_table.buffer[i].second << std::endl;
 
 	std::cin.get();
-
 }

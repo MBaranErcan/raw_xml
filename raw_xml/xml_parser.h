@@ -2,26 +2,29 @@
 #include "xml_string.h"
 #include "xml_unordered_map.h"
 
+#include "string"
+#include "unordered_map"
+
 namespace xml {
 	class parser {
 	public:
-		string content_symbol = "c";
-		string tag_symbol = "t";
-		string array_seperator = ">";
+		std::string content_symbol = "c";
+		std::string tag_symbol = "t";
+		std::string array_seperator = ">";
 
-		unordered_map<string, string> xml_table;
+		std::unordered_map<std::string, std::string> xml_table;
 
-		void parse(const string& xml_input) {
+		void parse(const std::string& xml_input) {
 
 			bool in_tag = false;
 			bool is_tag_closing = false;
-			string parent_tag_name;
-			string current_value_name;
+			std::string parent_tag_name;
+			std::string current_value_name;
 
 			bool is_intag_tag_happening = false;
 			bool is_intag_value_happening = false;
-			string intag_tag_name;
-			string intag_value_name;
+			std::string intag_tag_name;
+			std::string intag_value_name;
 
 			for (int i = 0; i < xml_input.size(); i++) {
 				const char& current = xml_input.at(i);
@@ -61,7 +64,7 @@ namespace xml {
 						if (parent_tag_name != "" && current_value_name != "")
 							xml_table[parent_tag_name] += (tag_symbol + current_value_name);
 
-						parent_tag_name += (parent_tag_name != "" ? string("/") : "") + current_value_name;
+						parent_tag_name += (parent_tag_name != "" ? std::string("/") : "") + current_value_name;
 					}
 					else {
 						size_t right_slash_index = parent_tag_name.find_last_of('/');
