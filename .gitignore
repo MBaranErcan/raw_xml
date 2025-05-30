@@ -1,0 +1,6 @@
+/.vs
+*.filters
+*.user
+*.obj
+/raw_xml/x64
+/x64
