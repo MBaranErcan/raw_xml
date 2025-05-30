@@ -131,6 +131,7 @@
     <ClCompile Include="xml_string.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="xml.h" />
     <ClInclude Include="xml_string.h" />
     <ClInclude Include="xml_unordered_map.h" />
     <ClInclude Include="xml_unordered_map_templated.h" />
