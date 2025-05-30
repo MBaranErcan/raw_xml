@@ -43,9 +43,17 @@ int main() {
 	xml::parser parser;
 	
 	parser.parse(xml_input);
+	
+	xml::string content_name;
+	xml::string tag_name;
+	parser.get_tag("book", 0, tag_name);
+	parser.get_content("book/content/maintext", 0, content_name);
 
-	for (auto& pair : parser.xml_table)
-		std::cout << pair.first << " " << pair.second << std::endl;
+	std::cout << tag_name << std::endl;
+	std::cout << content_name << std::endl;
+
+	//for (auto& pair : parser.xml_table)
+	//	std::cout << pair.first << " " << pair.second << std::endl;
 
 	std::cin.get();
 }

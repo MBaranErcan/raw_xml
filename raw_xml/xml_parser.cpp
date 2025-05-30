@@ -104,12 +104,10 @@ void xml::parser::get_tag(const char* parent_tag, int32_t index, xml::string& ou
 	
 	if (xml_table.find(parent_tag) != xml_table.end()){
 		string& entries = xml_table[parent_tag];
-		
 
 		size_t seperator_index = -1;
-		for (int32_t seperator_counter = 0; seperator_counter < index;) {
-			seperator_index++;
-			entries.find(array_seperator.at(0), seperator_index);
+		for (int32_t seperator_counter = 0; seperator_counter < index + 1;) {
+			seperator_index = entries.find(array_seperator.at(0), seperator_index + 1);
 			
 			if (seperator_index == string::npos)
 				return;
@@ -118,11 +116,37 @@ void xml::parser::get_tag(const char* parent_tag, int32_t index, xml::string& ou
 				seperator_counter++;
 		}
 
-		out_string.insert(0, entries.substr())
+		size_t entry_finish_index = entries.find(array_seperator.at(0), seperator_index + 1);
+		if (entry_finish_index == -1)
+			entry_finish_index = entries.size();
+
+		out_string.insert(0, entries, seperator_index + 2, entry_finish_index - seperator_index - 2);
 	}
 }
 
 void xml::parser::get_content(const char* parent_tag, int32_t index, xml::string& out_string) {
+	out_string.resize(0);
+
+	if (xml_table.find(parent_tag) != xml_table.end()) {
+		string& entries = xml_table[parent_tag];
+
+		size_t seperator_index = -1;
+		for (int32_t seperator_counter = 0; seperator_counter < index + 1;) {
+			seperator_index = entries.find(array_seperator.at(0), seperator_index + 1);
+
+			if (seperator_index == string::npos)
+				return;
+
+			if (entries.at(seperator_index + 1) == content_symbol.at(0))
+				seperator_counter++;
+		}
+
+		size_t entry_finish_index = entries.find(array_seperator.at(0), seperator_index + 1);
+		if (entry_finish_index == -1)
+			entry_finish_index = entries.size();
+
+		out_string.insert(0, entries, seperator_index + 2, entry_finish_index - seperator_index - 2);
+	}
 
 }
 

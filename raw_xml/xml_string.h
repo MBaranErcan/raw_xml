@@ -1,13 +1,20 @@
 #pragma once
 // define XML_INCLUDE_IOSTREAM before including this file to be able to print xml::string
 #define XML_INCLUDE_IOSTREAM
+//#define XML_INCLUDE_STDINT
 
+#ifdef XML_INCLUDE_STDINT
 #include "stdint.h"
+#else
+typedef unsigned long long size_t;
+typedef unsigned long long uint64_t;
+typedef long long int64_t;
+typedef unsigned int uint32_t;
+typedef int int32_t;
+#endif
 #ifdef XML_INCLUDE_IOSTREAM
 #include <iostream>
 #endif
-
-#include "string"
 
 namespace xml {
 

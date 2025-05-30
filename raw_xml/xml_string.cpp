@@ -196,7 +196,7 @@ size_t xml::string::find(char character, size_t pos) const
 		return npos;
 
 	for (size_t i = pos; i < size(); i++) {
-		if (at(pos) == character)
+		if (at(i) == character)
 			return i;
 	}
 	return npos;
@@ -245,25 +245,28 @@ xml::string& xml::string::insert(size_t pos, const char* other)
 	for (size_t i = 0; i < string::max_string_size && *(other + i) != '\0'; i++)
 		other_string_size++;
 
-	if (capacity() < size() + other_string_size)
-		reserve(size() + other_string_size);
 
-	size_t slide_amount = other_string_size;
-
-	for (size_t i = size()-1; i >= pos && i != -1; i--)
-		(*this)[i + slide_amount] = at(i);
-
-	for (size_t i = 0; i < other_string_size; i++)
-		(*this)[pos + i] = *(other + i);
-
-	_end += slide_amount;
-
-	return *this;
+	return insert(pos, other, 0, other_string_size);
 }
 
 xml::string& xml::string::insert(size_t pos, const string& other, size_t subpos, size_t sublen)
 {
+	size_t inserting_size = min(sublen, other.size());
 
+	if (capacity() < size() + inserting_size);
+	reserve(size() + inserting_size);
+
+	size_t slide_amount = inserting_size;
+
+	for (size_t i = size() - 1; i >= pos && i != -1; i--)
+		(*this)[i + slide_amount] = at(i);
+
+	for (size_t i = 0; i < inserting_size; i++)
+		(*this)[pos + i] = other.at(subpos + i);
+
+	_end += slide_amount;
+
+	return *this;
 }
 
 xml::string& xml::string::insert(size_t pos, const char* other, size_t subpos, size_t sublen)
@@ -272,15 +275,17 @@ xml::string& xml::string::insert(size_t pos, const char* other, size_t subpos, s
 	for (size_t i = 0; i < string::max_string_size && *(other + i) != '\0'; i++)
 		other_string_size++;
 
-	if (capacity() < size() + min(sublen, other_string_size))
-		reserve(size() + min(sublen, other_string_size));
+	size_t inserting_size = min(sublen, other_string_size);
 
-	size_t slide_amount = min(sublen, other_string_size);
+	if (capacity() < size() + inserting_size);
+		reserve(size() + inserting_size);
+
+	size_t slide_amount = inserting_size;
 
 	for (size_t i = size() - 1; i >= pos && i != -1; i--)
 		(*this)[i + slide_amount] = at(i);
 
-	for (size_t i = 0; i < min(sublen, other_string_size); i++)
+	for (size_t i = 0; i < inserting_size; i++)
 		(*this)[pos + i] = *(other + subpos + i);
 
 	_end += slide_amount;
