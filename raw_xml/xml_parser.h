@@ -2,36 +2,35 @@
 #include "xml_string.h"
 #include "xml_unordered_map.h"
 
-#include "string"
-#include "unordered_map"
-
 namespace xml {
 	class parser {
 	public:
-		std::string content_symbol = "c";
-		std::string tag_symbol = "t";
-		std::string array_seperator = ">";
+		xml::string content_symbol = "c";
+		xml::string tag_symbol = "t";
+		xml::string array_seperator = ">";
 
-		std::unordered_map<std::string, std::string> xml_table;
+		unordered_map<string, string> xml_table;
 
-		void parse(const std::string& xml_input) {
+		void parse(const string& xml_input) {
 
 			bool in_tag = false;
 			bool is_tag_closing = false;
-			std::string parent_tag_name;
-			std::string current_value_name;
+			string parent_tag_name;
+			string current_value_name;
 
 			bool is_intag_tag_happening = false;
 			bool is_intag_value_happening = false;
-			std::string intag_tag_name;
-			std::string intag_value_name;
+			string intag_tag_name;
+			string intag_value_name;
 
 			for (int i = 0; i < xml_input.size(); i++) {
 				const char& current = xml_input.at(i);
 
 				if (current == ' ' || current == '\n' || current == '\t' || current == '\r') {
-					if (!in_tag)
+					if (!in_tag) {
+						current_value_name += current;
 						continue;
+					}
 
 					if (is_intag_value_happening) {
 						xml_table[parent_tag_name + "/" + current_value_name + "/" + intag_tag_name] += array_seperator + (content_symbol + intag_value_name);
@@ -41,6 +40,7 @@ namespace xml {
 
 					is_intag_tag_happening = true;
 					is_intag_value_happening = false;
+
 				}
 				else if (current == '<') {
 					if (parent_tag_name != "" && current_value_name != "")
@@ -62,20 +62,17 @@ namespace xml {
 						}
 
 						if (parent_tag_name != "" && current_value_name != "")
-							xml_table[parent_tag_name] += (tag_symbol + current_value_name);
+							xml_table[parent_tag_name] += array_seperator + (tag_symbol + current_value_name);
 
-						parent_tag_name += (parent_tag_name != "" ? std::string("/") : "") + current_value_name;
+						parent_tag_name += (parent_tag_name != "" ? string("/") : "") + current_value_name;
 					}
 					else {
 						size_t right_slash_index = parent_tag_name.find_last_of('/');
-						if (right_slash_index != std::string::npos)
+						if (right_slash_index != string::npos)
 							parent_tag_name = parent_tag_name.substr(0, right_slash_index);
 						else
 							parent_tag_name = "";
 					}
-
-					std::cout << parent_tag_name << std::endl;
-
 
 					in_tag = false;
 					is_intag_tag_happening = false;

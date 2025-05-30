@@ -22,6 +22,8 @@
 //	std::cin.get();
 //}
 
+
+
 int main() {
 
 	xml::string xml_input = 
@@ -46,6 +48,10 @@ int main() {
 
 	for (auto& pair : parser.xml_table)
 		std::cout << pair.first << " " << pair.second << std::endl;
+
+	//for (size_t i = 0; i < parser.xml_table.buffer_size; i++)
+	//	if (!parser.xml_table.buffer[i].first.empty())
+	//		std::cout << parser.xml_table.buffer[i].first << " " << parser.xml_table.buffer[i].second << std::endl;
 
 	std::cin.get();
 }

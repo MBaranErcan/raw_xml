@@ -23,7 +23,7 @@ size_t xml::hash<xml::string>(const xml::string& obj) {
 	for (size_t i = 0; i < size; i++) {
 		hashCode += obj.at(i) * _int_pow(prime_constant, i);
 	}
-	return hashCode;
+	return hashCode + 10041405866739416012;
 }
 
 template<typename key_t, typename value_t>
@@ -61,4 +61,63 @@ value_t& xml::unordered_map<key_t, value_t>::operator[](key_t&& key) {
 
 	//	error overflow
 	//
+}
+
+template<typename key_t, typename value_t>
+inline size_t xml::unordered_map<key_t, value_t>::find(const key_t& key) const
+{
+	size_t index = hash(key);
+	for (size_t i = 0; i < buffer_size; i++) {
+		pair<key_t, value_t>& candidate = buffer[(index + i) % buffer_size];
+		if (candidate.first == key) {
+			return index + i;
+		}
+		else if (candidate.first.empty()) {
+			return end();
+		}
+	}
+	return end();
+}
+
+template<typename key_t, typename value_t>
+xml::unordered_map_iterator<key_t, value_t> xml::unordered_map<key_t, value_t>::begin()
+{
+	xml::unordered_map_iterator<key_t, value_t> iterator(*this, &buffer[0]);
+	++iterator;
+	return iterator;
+}
+
+template<typename key_t, typename value_t>
+xml::unordered_map_iterator<key_t, value_t> xml::unordered_map<key_t, value_t>::end()
+{
+	return xml::unordered_map_iterator<key_t, value_t>(*this, &buffer[buffer_size]);
+}
+
+template<typename key_t, typename value_t>
+xml::unordered_map_iterator<key_t, value_t>::unordered_map_iterator(unordered_map<key_t, value_t>& owner, pair<key_t, value_t>* pointer) :
+	owner(owner), pointer(pointer) {
+}
+
+template<typename key_t, typename value_t>
+xml::pair<key_t, value_t>& xml::unordered_map_iterator<key_t, value_t>::operator*()
+{
+	xml_assert(pointer != nullptr, "unordered_map_interator::operator*() is called but pointer was nullptr");
+	return *pointer;
+}
+template<typename key_t, typename value_t>
+void xml::unordered_map_iterator<key_t, value_t>::operator++()
+{
+	xml_assert(pointer != nullptr, "unordered_map_interator::operator++() is called but pointer was nulllptr)");
+	for (pointer++; pointer < owner.end().pointer; pointer++) {
+		if (!pointer->first.empty())
+			return;
+	}
+	return;
+}
+template<typename key_t, typename value_t>
+bool xml::unordered_map_iterator<key_t, value_t>::operator!=(const unordered_map_iterator& other)
+{
+	if (pointer == nullptr) return true;
+	if (other.pointer == nullptr) return true;
+	return pointer != other.pointer;
 }

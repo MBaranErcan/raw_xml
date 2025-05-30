@@ -1,4 +1,5 @@
 #include "xml_string.h"
+#include "xml_assert.h"
 
 xml::string xml::string_bank::malloc(size_t size)
 {
@@ -6,10 +7,12 @@ xml::string xml::string_bank::malloc(size_t size)
 	buffer_iterator += size;
 	size_t end = buffer_iterator;
 
+	xml_assert(buffer_iterator < buffer_size, "xml::string_bank::malloc() overflowed");
+	
 	return xml::string(begin, end);
 }
 
-void xml::string_bank::relloc(string& string, size_t new_size)
+void xml::string_bank::realloc(string& string, size_t new_size)
 {
 	bool is_on_top_of_buffer = (size_t)string._end == buffer_iterator;
 	size_t old_begin = string._begin;
@@ -19,6 +22,7 @@ void xml::string_bank::relloc(string& string, size_t new_size)
 		buffer_iterator = string._begin;
 
 	xml::string new_string = malloc(new_size);
+	xml_assert(buffer_iterator < buffer_size, "xml::string_bank::realloc() overflowed");
 
 	string._end += new_string._begin - old_begin;
 	string._begin = new_string._begin;
@@ -32,11 +36,19 @@ void xml::string_bank::relloc(string& string, size_t new_size)
 		for (size_t i = 0; i < old_size; i++)
 			string[i] = (buffer[old_begin + i]);
 	}
+
+
 }
 
 void xml::string_bank::free(string& string)
 {
-	if ((size_t)string._end == buffer_iterator)
+	xml_assert(string._begin <= string._capacity_end, "xml::string::free() string._begin is greater than string._capacity_end");
+	xml_assert(string._capacity_end < buffer_size, "xml::string::free() string._capacity_end is greater than buffer_size");
+
+	if (string.capacity() == 0)
+		return;
+
+	if ((size_t)string._capacity_end == buffer_iterator)
 		buffer_iterator = string._begin;
 
 	string._begin = 0;
@@ -50,7 +62,10 @@ void xml::string_bank::free(string& string)
 xml::string_bank xml::string::bank;
 
 xml::string::string(size_t begin, size_t end) :
-	_begin(begin), _end(end), _capacity_end(end) {}
+	_begin(begin), _end(end), _capacity_end(end) 
+{
+	xml_assert(size() <= max_string_size, "xml::string::string() larger than max_string_sixe");
+}
 
 xml::string::string(const char* global_string)
 {
@@ -83,6 +98,8 @@ xml::string::string(string&& other)
 	this->_end = other._end;
 	this->_capacity_end = other._capacity_end;
 
+	xml_assert(capacity() <= max_string_size, "xml::string::string(string&& other) string capacity is greater than max_string_size");
+
 	other._begin = 0;
 	other._end = 0;
 	other._capacity_end = 0;
@@ -104,6 +121,8 @@ xml::string& xml::string::operator=(string&& other)
 	this->_end = other._end;
 	this->_capacity_end = other._capacity_end;
 
+	xml_assert(capacity() <= max_string_size, "xml::string::operator=() string capacity is greater than max_string_size");
+	
 	other._begin = 0;
 	other._end = 0;
 	other._capacity_end = 0;
@@ -120,13 +139,17 @@ const char* xml::string::c_str() const
 void xml::string::reserve(size_t new_size)
 {
 	if (size() < new_size)
-		bank.relloc(*this, new_size);
+		bank.realloc(*this, new_size);
+	
+	xml_assert(new_size <= max_string_size, "xml::string::reserve() larger than max_string_sixe");
 }
 
 void xml::string::resize(size_t new_size)
 {
 	if (capacity() < new_size)
-		bank.relloc(*this, new_size);
+		bank.realloc(*this, new_size);
+	
+	xml_assert(new_size <= max_string_size, "xml::string::resize() larger than max_string_sixe");
 
 	size_t extra_size = new_size - size();
 	for (size_t i = _end; i < new_size; i++)
@@ -137,11 +160,13 @@ void xml::string::resize(size_t new_size)
 
 char* xml::string::begin() const
 {
+	xml_assert(_begin < bank.buffer_size, "xml::string::begin() _begin is greater than bank's buffer size");
 	return &(bank.buffer[_begin]);
 }
 
 char* xml::string::end() const
 {
+	xml_assert(_end < bank.buffer_size, "xml::string::end() _end is greater than bank's buffer size");
 	return &(bank.buffer[_end]);
 }
 
@@ -155,8 +180,7 @@ size_t xml::string::capacity() const
 }
 
 char xml::string::at(size_t offset) const {
-	//if (offset >= size())
-	//	error;
+	xml_assert(offset < capacity(), "xml::string::at() offset is out of bounds");
 
 	return *(begin() + offset);
 }
@@ -168,7 +192,7 @@ bool xml::string::empty()
 
 size_t xml::string::find_last_of(char character)
 {
-	for (size_t i = size() - 1; i >= 0; i--)
+	for (size_t i = size()-1; i >= 0 && i!=-1; i--)
 		if (at(i) == character)
 			return i;
 
@@ -180,15 +204,74 @@ xml::string xml::string::substr(size_t offset, size_t count)
 	xml::string new_string;
 	new_string.resize(count);
 	for (size_t i = 0; i < count; i++)
-		new_string[count] = at(offset + i);
+		new_string[i] = at(offset + i);
 
 	return new_string;
 }
 
+xml::string& xml::string::insert(size_t pos, const string& other)
+{
+	if (capacity() < size() + other.size())
+		reserve(size() + other.size());
+
+	size_t slide_amount = other.size();
+
+	for (size_t i = size()-1; i >= pos && i != -1; i--)
+		(*this)[i + slide_amount] = at(i);
+	
+	for (size_t i = 0; i < other.size(); i++)
+		(*this)[pos + i] = other.at(i);
+
+	_end += slide_amount;
+
+	return *this;
+}
+
+xml::string& xml::string::insert(size_t pos, const char* other)
+{
+	size_t other_string_size = 0;
+	for (size_t i = 0; i < string::max_string_size && *(other + i) != '\0'; i++)
+		other_string_size++;
+
+	if (capacity() < size() + other_string_size)
+		reserve(size() + other_string_size);
+
+	size_t slide_amount = other_string_size;
+
+	for (size_t i = size()-1; i >= pos && i != -1; i--)
+		(*this)[i + slide_amount] = at(i);
+
+	for (size_t i = 0; i < other_string_size; i++)
+		(*this)[pos + i] = *(other + i);
+
+	_end += slide_amount;
+
+	return *this;
+}
+
+xml::string& xml::string::insert(size_t pos, char other)
+{
+	size_t additional_size = 1;
+
+	if (capacity() < size() + additional_size)
+		reserve(size() + additional_size);
+
+	size_t slide_amount = additional_size;
+
+	for (size_t i = size()-1; i >= pos && i != -1; i--)
+		(*this)[i + slide_amount] = at(i);
+
+	for (size_t i = 0; i < additional_size; i++)
+		(*this)[pos + i] = other;
+
+	_end += slide_amount;
+
+	return *this;
+}
+
 char& xml::string::operator[](size_t offset)
 {
-	//if (offset >= size())
-	//	error
+	xml_assert(offset < capacity(), "xml::string::operator[]() offset is out of bounds");
 
 	return *(begin() + offset);
 }
@@ -329,3 +412,25 @@ std::ostream& operator<<(std::ostream& stream, const xml::string& xml_string)
 	return stream;
 }
 #endif
+
+xml::string xml::operator+(const string& rhs, const string& lhs)
+{
+	string new_string(rhs);
+	new_string.insert(0, lhs);
+	return new_string;
+}
+
+xml::string xml::operator+(const char* lhs, const string& rhs)
+{
+	string new_string(rhs);
+	new_string.insert(0, lhs);
+	return new_string;
+}
+
+xml::string xml::operator+(char rhs, const string& lhs)
+{
+	string new_string;
+	new_string += rhs;
+	new_string.insert(0, lhs);
+	return new_string;
+}

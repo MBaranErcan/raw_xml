@@ -7,6 +7,8 @@
 #include <iostream>
 #endif
 
+#include "string"
+
 namespace xml {
 
 	class string;
@@ -22,7 +24,7 @@ namespace xml {
 
 		void clear();
 		string malloc(size_t size);
-		void relloc(string& string, size_t new_size);
+		void realloc(string& string, size_t new_size);
 		void free(string& string);
 
 		//void defragment_buffer(const unordered_map& unordered_map);
@@ -62,6 +64,10 @@ namespace xml {
 		size_t find_last_of(char character);
 		string substr(size_t offset, size_t count);
 
+		string& insert(size_t pos, const string& other);
+		string& insert(size_t pos, const char* other);
+		string& insert(size_t pos, char other);
+
 		char& operator[](size_t offset);
 		bool operator==(const string& other);
 		bool operator==(const char* other);
@@ -75,6 +81,10 @@ namespace xml {
 		xml::string operator+(const string& other0);
 		xml::string operator+(const char* other);
 		xml::string operator+(const char other);
+
+		friend xml::string operator+(const string& rhs, const string& lhs);
+		friend xml::string operator+(const char* rhs, const string& lhs);
+		friend xml::string operator+(char rhs, const string& lhs);
 
 		constexpr static size_t npos = -1;
 
