@@ -185,12 +185,24 @@ char xml::string::at(size_t offset) const {
 	return *(begin() + offset);
 }
 
-bool xml::string::empty()
+bool xml::string::empty() const
 {
 	return size() == 0;
 }
 
-size_t xml::string::find_last_of(char character)
+size_t xml::string::find(char character, size_t pos) const
+{
+	if (pos == npos)
+		return npos;
+
+	for (size_t i = pos; i < size(); i++) {
+		if (at(pos) == character)
+			return i;
+	}
+	return npos;
+}
+
+size_t xml::string::find_last_of(char character) const
 {
 	for (size_t i = size()-1; i >= 0 && i!=-1; i--)
 		if (at(i) == character)
@@ -199,7 +211,7 @@ size_t xml::string::find_last_of(char character)
 	return npos;
 }
 
-xml::string xml::string::substr(size_t offset, size_t count)
+xml::string xml::string::substr(size_t offset, size_t count) const
 {
 	xml::string new_string;
 	new_string.resize(count);
@@ -249,6 +261,33 @@ xml::string& xml::string::insert(size_t pos, const char* other)
 	return *this;
 }
 
+xml::string& xml::string::insert(size_t pos, const string& other, size_t subpos, size_t sublen)
+{
+
+}
+
+xml::string& xml::string::insert(size_t pos, const char* other, size_t subpos, size_t sublen)
+{
+	size_t other_string_size = 0;
+	for (size_t i = 0; i < string::max_string_size && *(other + i) != '\0'; i++)
+		other_string_size++;
+
+	if (capacity() < size() + min(sublen, other_string_size))
+		reserve(size() + min(sublen, other_string_size));
+
+	size_t slide_amount = min(sublen, other_string_size);
+
+	for (size_t i = size() - 1; i >= pos && i != -1; i--)
+		(*this)[i + slide_amount] = at(i);
+
+	for (size_t i = 0; i < min(sublen, other_string_size); i++)
+		(*this)[pos + i] = *(other + subpos + i);
+
+	_end += slide_amount;
+
+	return *this;
+}
+
 xml::string& xml::string::insert(size_t pos, char other)
 {
 	size_t additional_size = 1;
@@ -276,7 +315,7 @@ char& xml::string::operator[](size_t offset)
 	return *(begin() + offset);
 }
 
-bool xml::string::operator==(const string& other)
+bool xml::string::operator==(const string& other) const
 {
 	if (size() != other.size())
 		return false;
@@ -289,7 +328,7 @@ bool xml::string::operator==(const string& other)
 }
 
 
-bool xml::string::operator==(const char* other)
+bool xml::string::operator==(const char* other) const
 {
 	size_t other_string_size = 0;
 	for (size_t i = 0; i < max_string_size && *(other + i) != '\0'; i++)
@@ -305,11 +344,11 @@ bool xml::string::operator==(const char* other)
 	return true;
 }
 
-bool xml::string::operator!=(const string& other) {
+bool xml::string::operator!=(const string& other) const {
 	return !(*this == other);
 }
 
-bool xml::string::operator!=(const char* other)
+bool xml::string::operator!=(const char* other) const
 {
 	return !(*this == other);
 }

@@ -59,20 +59,23 @@ namespace xml {
 		size_t size() const;
 		size_t capacity() const;
 		char at(size_t offset) const;
-		bool empty();
+		bool empty() const;
 
-		size_t find_last_of(char character);
-		string substr(size_t offset, size_t count);
+		size_t find(char character, size_t pos = 0) const;
+		size_t find_last_of(char character) const;
+		string substr(size_t offset, size_t count) const;
 
 		string& insert(size_t pos, const string& other);
 		string& insert(size_t pos, const char* other);
+		string& insert(size_t pos, const string& other, size_t subpos, size_t sublen);
+		string& insert(size_t pos, const char* other, size_t subpos, size_t sublen);
 		string& insert(size_t pos, char other);
 
 		char& operator[](size_t offset);
-		bool operator==(const string& other);
-		bool operator==(const char* other);
-		bool operator!=(const string& other);
-		bool operator!=(const char* other);
+		bool operator==(const string& other) const;
+		bool operator==(const char* other) const;
+		bool operator!=(const string& other) const;
+		bool operator!=(const char* other) const;
 
 		xml::string& operator+=(const string& other);
 		xml::string& operator+=(const char* other);

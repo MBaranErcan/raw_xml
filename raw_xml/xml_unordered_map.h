@@ -25,12 +25,13 @@ namespace xml {
 
 		pair<key_t, value_t>& operator*();
 		void operator++();
-		bool operator!=(const unordered_map_iterator& other);
+		bool operator==(const unordered_map_iterator& other) const;
+		bool operator!=(const unordered_map_iterator& other) const;
 
 	private:
-		unordered_map_iterator(unordered_map<key_t, value_t>& owner, pair<key_t, value_t>* pointer = nullptr);
+		unordered_map_iterator(const unordered_map<key_t, value_t>& owner, pair<key_t, value_t>* pointer = nullptr);
 
-		unordered_map<key_t, value_t>& owner;
+		const unordered_map<key_t, value_t>& owner;
 		pair<key_t, value_t>* pointer = nullptr;
 	};
 
@@ -42,10 +43,10 @@ namespace xml {
 		value_t& operator[](const key_t& key);
 		value_t& operator[](key_t&& key);
 
-		size_t find(const key_t& key) const;
+		unordered_map_iterator<key_t, value_t> find(const key_t& key) const;
 
-		 unordered_map_iterator<key_t, value_t> begin();
-		 unordered_map_iterator<key_t, value_t> end();
+		unordered_map_iterator<key_t, value_t> begin() const;
+		unordered_map_iterator<key_t, value_t> end() const;
 
 		pair<key_t, value_t> buffer[buffer_size];
 	private:

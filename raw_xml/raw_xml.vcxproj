@@ -129,11 +129,11 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="xml_parser.cpp" />
     <ClCompile Include="xml_string.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="xml_assert.h" />
-    <ClInclude Include="xml.h" />
     <ClInclude Include="xml_parser.h" />
     <ClInclude Include="xml_string.h" />
     <ClInclude Include="xml_unordered_map.h" />

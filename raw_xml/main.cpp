@@ -24,7 +24,7 @@
 
 int main() {
 
-	xml::string xml_input = 
+	const char* xml_input = 
 	"<book>"
 		"<content page_number=\"12\" text=\"hello\">"
 			"<maintext>"
