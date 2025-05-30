@@ -16,15 +16,14 @@ namespace xml {
 
 	template<typename key_t, typename value_t>
 	class unordered_map {
-	private:
-		constexpr static size_t buffer_size = 1024 * 16;
 	public:	
+		constexpr static size_t buffer_size = 1024 * 16;
 
 		value_t& operator[](const key_t& key);
 		value_t& operator[](key_t&& key);
 
-	private:
 		pair<key_t, value_t> buffer[buffer_size];
+	private:
 	};
 }
 

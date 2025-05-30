@@ -166,6 +166,25 @@ bool xml::string::empty()
 	return size() == 0;
 }
 
+size_t xml::string::find_last_of(char character)
+{
+	for (size_t i = size() - 1; i >= 0; i--)
+		if (at(i) == character)
+			return i;
+
+	return npos;
+}
+
+xml::string xml::string::substr(size_t offset, size_t count)
+{
+	xml::string new_string;
+	new_string.resize(count);
+	for (size_t i = 0; i < count; i++)
+		new_string[count] = at(offset + i);
+
+	return new_string;
+}
+
 char& xml::string::operator[](size_t offset)
 {
 	//if (offset >= size())

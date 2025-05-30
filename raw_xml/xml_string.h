@@ -14,7 +14,7 @@ namespace xml {
 	class string_bank {
 		friend string;
 	private:
-		constexpr static size_t buffer_size = 1024 * 1024;
+		constexpr static size_t buffer_size = 1024 * 32;
 	public:
 
 		string_bank() = default;
@@ -36,7 +36,7 @@ namespace xml {
 	class string {
 	private:
 		friend string_bank;
-		constexpr static size_t max_string_size = 1024;
+		constexpr static size_t max_string_size = 512;
 	public:
 
 		string(const char* global_string);
@@ -59,6 +59,9 @@ namespace xml {
 		char at(size_t offset) const;
 		bool empty();
 
+		size_t find_last_of(char character);
+		string substr(size_t offset, size_t count);
+
 		char& operator[](size_t offset);
 		bool operator==(const string& other);
 		bool operator==(const char* other);
@@ -72,6 +75,8 @@ namespace xml {
 		xml::string operator+(const string& other0);
 		xml::string operator+(const char* other);
 		xml::string operator+(const char other);
+
+		constexpr static size_t npos = -1;
 
 	private:
 		string(size_t begin, size_t end);

@@ -1,5 +1,6 @@
 #include "xml_string.h"
 #include "xml_unordered_map.h"
+#include "xml_parser.h"
 
 //int main() {
 //
@@ -13,23 +14,39 @@
 //	std::cin.get();
 //}
 
+//int main() {
+//
+//	xml::unordered_map<xml::string, xml::string> table;
+//
+//	table["book"] = "Hey you!";
+//
+//	std::cout << table["xd"] << std::endl;
+//	std::cout << table["book"] << std::endl;
+//	
+//	table["book"] = "I have written the standard library without heap tonight!";
+//
+//	std::cout << table["book"] << std::endl;
+//
+//	table["fuck yeah"] = "wanna check it out?";
+//
+//	std::cout << table["fuck yeah"] << std::endl;
+//
+//
+//	std::cin.get();
+//}
+
+xml::string xml_input = "<book><content page_number=\"12\" text=\"hello\"><text>hello2</text></content><author>oscar wilde</author></book><mehmet>jedi</mehmet>";
+
 int main() {
-
-	xml::unordered_map<xml::string, xml::string> table;
-
-	table["book"] = "Hey you!";
-
-	std::cout << table["xd"] << std::endl;
-	std::cout << table["book"] << std::endl;
 	
-	table["book"] = "I have written the standard library without heap tonight!";
+	xml::parser parser;
 
-	std::cout << table["book"] << std::endl;
+	parser.parse(xml_input);
 
-	table["fuck yeah"] = "wanna check it out?";
-
-	std::cout << table["fuck yeah"] << std::endl;
-
+	for (size_t i = 0; i < parser.xml_table.buffer_size; i++)
+		if (!parser.xml_table.buffer[i].first.empty())
+			std::cout << parser.xml_table.buffer[i].first << " " << parser.xml_table.buffer[i].second << std::endl;
 
 	std::cin.get();
+
 }
