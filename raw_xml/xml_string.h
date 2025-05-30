@@ -1,7 +1,7 @@
 #pragma once
 // define XML_INCLUDE_IOSTREAM before including this file to be able to print xml::string
 #define XML_INCLUDE_IOSTREAM
-//#define XML_INCLUDE_STDINT
+#define XML_INCLUDE_STDINT
 
 #ifdef XML_INCLUDE_STDINT
 #include "stdint.h"
@@ -96,6 +96,10 @@ namespace xml {
 		friend xml::string operator+(const char* rhs, const string& lhs);
 		friend xml::string operator+(char rhs, const string& lhs);
 
+#ifdef XML_INCLUDE_IOSTREAM
+		friend std::ostream& operator<<(std::ostream& stream, const xml::string& xml_string);
+#endif
+
 		constexpr static size_t npos = -1;
 
 	private:
@@ -112,6 +116,3 @@ namespace xml {
 	};
 };
 
-#ifdef XML_INCLUDE_IOSTREAM
-std::ostream& operator<<(std::ostream& stream, const xml::string& xml_string);
-#endif

@@ -36,8 +36,6 @@ void xml::string_bank::realloc(string& string, size_t new_size)
 		for (size_t i = 0; i < old_size; i++)
 			string[i] = (buffer[old_begin + i]);
 	}
-
-
 }
 
 void xml::string_bank::free(string& string)
@@ -55,7 +53,6 @@ void xml::string_bank::free(string& string)
 	string._end = 0;
 	string._capacity_end = 0;
 }
-
 
 // --------------------------------------------------------------------
 
@@ -448,15 +445,6 @@ size_t xml::string::max(size_t a, size_t b)
 
 }
 
-#ifdef XML_INCLUDE_IOSTREAM
-std::ostream& operator<<(std::ostream& stream, const xml::string& xml_string)
-{
-	for (size_t i = 0; i < xml_string.size(); i++)
-		stream << xml_string.at(i);
-	return stream;
-}
-#endif
-
 xml::string xml::operator+(const string& rhs, const string& lhs)
 {
 	string new_string(rhs);
@@ -478,3 +466,12 @@ xml::string xml::operator+(char rhs, const string& lhs)
 	new_string.insert(0, lhs);
 	return new_string;
 }
+
+#ifdef XML_INCLUDE_IOSTREAM
+std::ostream& xml::operator<<(std::ostream& stream, const xml::string& xml_string)
+{
+	for (size_t i = 0; i < xml_string.size(); i++)
+		stream << xml_string.at(i);
+	return stream;
+}
+#endif
