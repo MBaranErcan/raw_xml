@@ -102,26 +102,39 @@ void xml::parser::get_tag(const char* parent_tag, int32_t index, xml::string& ou
 	
 	out_string.resize(0);
 	
-	if (xml_table.find(parent_tag) != xml_table.end()){
-		string& entries = xml_table[parent_tag];
+	if (parent_tag[0] == '\0') {
+		int32_t tag_counter = 0;
+		for (auto& pair : xml_table) {
+			if (pair.first.find('/') != string::npos)
+				continue;
 
-		size_t seperator_index = -1;
-		for (int32_t seperator_counter = 0; seperator_counter < index + 1;) {
-			seperator_index = entries.find(array_seperator.at(0), seperator_index + 1);
-			
-			if (seperator_index == string::npos)
-				return;
-
-			if (entries.at(seperator_index + 1) == tag_symbol.at(0))
-				seperator_counter++;
+			if (tag_counter == index)
+				out_string.insert(0, pair.first);
+			tag_counter++;
 		}
-
-		size_t entry_finish_index = entries.find(array_seperator.at(0), seperator_index + 1);
-		if (entry_finish_index == -1)
-			entry_finish_index = entries.size();
-
-		out_string.insert(0, entries, seperator_index + 2, entry_finish_index - seperator_index - 2);
 	}
+
+	if (xml_table.find(parent_tag) == xml_table.end())
+		return;
+
+	string& entries = xml_table[parent_tag];
+
+	size_t seperator_index = -1;
+	for (int32_t seperator_counter = 0; seperator_counter < index + 1;) {
+		seperator_index = entries.find(array_seperator.at(0), seperator_index + 1);
+			
+		if (seperator_index == string::npos)
+			return;
+
+		if (entries.at(seperator_index + 1) == tag_symbol.at(0))
+			seperator_counter++;
+	}
+
+	size_t entry_finish_index = entries.find(array_seperator.at(0), seperator_index + 1);
+	if (entry_finish_index == -1)
+		entry_finish_index = entries.size();
+
+	out_string.insert(0, entries, seperator_index + 2, entry_finish_index - seperator_index - 2);
 }
 
 void xml::parser::get_content(const char* parent_tag, int32_t index, xml::string& out_string) {
