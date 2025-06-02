@@ -87,14 +87,12 @@ namespace xml {
 		xml::string& operator+=(const string& other);
 		xml::string& operator+=(const char* other);
 		xml::string& operator+=(char other);
-		
-		xml::string operator+(const string& other0);
-		xml::string operator+(const char* other);
-		xml::string operator+(const char other);
 
-		friend xml::string operator+(const string& rhs, const string& lhs);
-		friend xml::string operator+(const char* rhs, const string& lhs);
-		friend xml::string operator+(char rhs, const string& lhs);
+		friend xml::string operator+(const string& lhs, const string& rhs);
+		friend xml::string operator+(const char* lhs, const string& rhs);
+		friend xml::string operator+(char lhs, const string& rhs);
+		friend xml::string operator+(const char* lhs, const string& rhs);
+		friend xml::string operator+(char lhs, const string& rhs);
 
 #ifdef XML_INCLUDE_IOSTREAM
 		friend std::ostream& operator<<(std::ostream& stream, const xml::string& xml_string);
