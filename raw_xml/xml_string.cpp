@@ -151,14 +151,19 @@ void xml::string::reserve(size_t new_size)
 
 void xml::string::resize(size_t new_size)
 {
+	xml_assert(new_size <= max_string_size, "xml::string::resize() larger than max_string_sixe");
+	
 	if (capacity() < new_size)
 		bank.realloc(*this, new_size);
-	
-	xml_assert(new_size <= max_string_size, "xml::string::resize() larger than max_string_sixe");
 
-	size_t extra_size = new_size - size();
-	for (size_t i = 0; i < extra_size; i++)
-		(*this)[i+_end] = '\0';
+	if (size() < new_size) {
+		for (size_t i = _end; i < new_size; i++)
+			(*this)[i] = '\0';
+	}
+	else {
+		for (size_t i = _end-1; i >= new_size; i--)
+			(*this)[i] = '\0';
+	}
 	
 	_end = _begin + new_size;
 }
