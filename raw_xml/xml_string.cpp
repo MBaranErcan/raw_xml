@@ -14,7 +14,7 @@ xml::string xml::string_bank::malloc(size_t size)
 
 void xml::string_bank::realloc(string& string, size_t new_size)
 {
-	bool is_on_top_of_buffer = (size_t)string._end == buffer_iterator;
+	bool is_on_top_of_buffer = (size_t)string._capacity_end == buffer_iterator;
 	size_t old_begin = string._begin;
 	size_t old_size = string.size();
 
