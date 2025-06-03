@@ -157,11 +157,11 @@ void xml::string::resize(size_t new_size)
 		bank.realloc(*this, new_size);
 
 	if (size() < new_size) {
-		for (size_t i = _end; i < new_size; i++)
+		for (size_t i = size(); i < new_size; i++)
 			(*this)[i] = '\0';
 	}
 	else {
-		for (size_t i = _end-1; i >= new_size; i--)
+		for (size_t i = size()-1; i >= new_size; i--)
 			(*this)[i] = '\0';
 	}
 	
