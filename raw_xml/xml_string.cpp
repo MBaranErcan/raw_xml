@@ -161,8 +161,8 @@ void xml::string::resize(size_t new_size)
 			(*this)[i] = '\0';
 	}
 	else {
-		for (size_t i = size()-1; i >= new_size; i--)
-			(*this)[i] = '\0';
+		for (size_t i = size(); i > new_size; i--)
+			(*this)[i-1] = '\0';
 	}
 	
 	_end = _begin + new_size;
