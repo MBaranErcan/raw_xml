@@ -7,6 +7,7 @@ void xml::parser::parse(const string& xml_input)
 	string parent_tag_name;
 	string current_value_name;
 
+ bool is_intag_oneliner = false;
 	bool is_intag_tag_happening = false;
 	bool is_intag_value_happening = false;
 	string intag_tag_name;
@@ -42,7 +43,19 @@ void xml::parser::parse(const string& xml_input)
 			current_value_name = "";
 		}
 		else if (current == '>') {
-			if (!is_tag_closing) {
+
+   if (is_intag_oneliner) { 
+     xml_table[parent_tag_name] += array_seperator + (tag_symbol + current_value_name);
+
+   xml_table[parent_tag_name + "/" + current_value_name + "/" + intag_tag_name] += array_seperator + (content_symbol + intag_value_name);
+
+    intag_tag_nane = "";
+    intag_value_name = "" ;
+
+    is_intag_oneliner = false;
+} 
+
+			else if (!is_tag_closing) {
 
 				if (is_intag_value_happening) {
 					xml_table[parent_tag_name + "/" + current_value_name + "/" + intag_tag_name] += array_seperator + (content_symbol + intag_value_name);
@@ -70,12 +83,17 @@ void xml::parser::parse(const string& xml_input)
 			current_value_name = "";
 		}
 		else if (current == '/') {
-			in_tag = true;
-			is_intag_tag_happening = false;
-			is_intag_value_happening = false;
-			is_tag_closing = true;
-			current_value_name = "";
+   if (is_intag_value_happening) {
+     is_intag_oneliner = true;
+} 
+  else {
+			 in_tag = true;
+	 		is_intag_tag_happening = false;
+ 			is_intag_value_happening = false;
+ 			is_tag_closing = true;
+ 			current_value_name = "";
 		}
+} 
 		else if (current == '=') {
 
 			xml_table[parent_tag_name + "/" + current_value_name] += array_seperator + tag_symbol + intag_tag_name;
